@@ -1,4 +1,4 @@
-package GoS
+package main
 
 import (
 	"log"
@@ -73,6 +73,7 @@ func main() {
 	// реализацию с кодом автогенерированного интерфейса для нашего
 	// сообщения `Response`, которое мы создали в нашем протобуфе
 	pb.RegisterSendServiceServer(s, &service{repo})
+	log.Printf("server listening at %v", lis.Addr())
 
 	// Регистрация службы ответов на сервере gRPC.
 	reflection.Register(s)
