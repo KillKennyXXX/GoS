@@ -14,5 +14,5 @@ message ServMSG {
 
 message ClientMSG  {
   bool created = 1;
-  ServMSG msg = 2;
+  ServMSG smsg = 2;
 }

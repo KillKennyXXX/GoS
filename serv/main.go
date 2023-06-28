@@ -5,7 +5,7 @@ import (
 	"net"
 
 	// Импотртируем код протобуфера
-	pb "transport/transport"
+	pb "GoS/transport"
 
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -18,20 +18,20 @@ const (
 
 // IRepository - интерфейс хранилища
 type IRepository interface {
-	Create(*pb.Consignment) (*pb.Consignment, error)
+	Create(*pb.ServMSG) (*pb.ServMSG, error)
 }
 
 // Repository - структура для эмитации хранилища,
 // после мы заменим её на настоящие хранилищем
 type Repository struct {
-	consignments []*pb.Consignment
+	messages []*pb.ServMSG
 }
 
 // Create - создаём новое хранилище
-func (repo *Repository) Create(consignment *pb.Consignment) (*pb.Consignment, error) {
-	updated := append(repo.consignments, consignment)
-	repo.consignments = updated
-	return consignment, nil
+func (repo *Repository) Create(smsg *pb.ServMSG) (*pb.ServMSG, error) {
+	updated := append(repo.messages, smsg)
+	repo.messages = updated
+	return smsg, nil
 }
 
 // Служба должна реализовать все методы для удовлетворения сервиса
@@ -41,20 +41,21 @@ type service struct {
 	repo IRepository
 }
 
-// CreateConsignment - мы создали только один метод для нашего сервиса,
+//   - мы создали только один метод для нашего сервиса,
+//
 // который является методом create, который принимает контекст и запрос
 // потом они обрабатываются сервером gRPC.
-func (s *service) CreateConsignment(ctx context.Context, req *pb.Consignment) (*pbf.Response, error) {
+func (s *service) SendMSG(ctx context.Context, req *pb.ServMSG) (*pb.ClientMSG, error) {
 
 	// Сохраним нашу партию в хранидище
-	consignment, err := s.repo.Create(req)
+	msg, err := s.repo.Create(req)
 	if err != nil {
 		return nil, err
 	}
 
 	// Возвращаем сообщение `Response`,
 	// которое мы создали в нашем определнии пробуфа
-	return &pb.Response{Created: true, Consignment: consignment}, nil
+	return &pb.ClientMSG{Created: true, Smsg: msg}, nil
 }
 
 func main() {
@@ -71,7 +72,7 @@ func main() {
 	// Зарегистрируйте нашу службу на сервере gRPC, это свяжет нашу
 	// реализацию с кодом автогенерированного интерфейса для нашего
 	// сообщения `Response`, которое мы создали в нашем протобуфе
-	pb.RegisterShippingServiceServer(s, &service{repo})
+	pb.RegisterSendServiceServer(s, &service{repo})
 
 	// Регистрация службы ответов на сервере gRPC.
 	reflection.Register(s)

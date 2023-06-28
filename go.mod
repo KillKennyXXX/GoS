@@ -1,4 +1,4 @@
-module github.com/KillKennyXXX/GoS
+module GoS
 
 go 1.20
 
