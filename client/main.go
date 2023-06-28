@@ -41,7 +41,7 @@ func main() {
 		log.Fatalf("could not greet: %v", err)
 	}
 	j, _ := json.Marshal(r)
-	log.Printf("вы в городе %s, температура  %f*, номер сообщения %d ", r.GetName(), r.GetTemperature(), r.GetId())
+	// log.Printf("вы в городе %s, температура  %f*, номер сообщения %d ", r.GetName(), r.GetTemperature(), r.GetId())
 
 	log.Printf("%s", j)
 }
