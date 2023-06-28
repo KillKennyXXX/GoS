@@ -28,7 +28,7 @@ type server struct {
 // потом они обрабатываются сервером gRPC.
 func (s *server) SendMSG(ctx context.Context, in *pb.ClientMSG) (*pb.ServMSG, error) {
 
-	log.Printf("Received: %v", in.GetName())
+	log.Printf("Received: %s", in.GetName())
 	return &pb.ServMSG{Id: id, Temperature: temperature, Name: name}, nil
 
 }

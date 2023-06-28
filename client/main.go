@@ -4,8 +4,10 @@ import (
 	"flag"
 	"log"
 	"time"
+
 	// Импотртируем код протобуфера
 	pb "GoS/transport"
+	"encoding/json"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -38,5 +40,8 @@ func main() {
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)
 	}
-	log.Printf("вы в городе : %s", r.GetName())
+	j, _ := json.Marshal(r)
+	log.Printf("вы в городе %s, температура  %f*, номер сообщения %d ", r.GetName(), r.GetTemperature(), r.GetId())
+
+	log.Printf("%s", j)
 }
