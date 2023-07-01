@@ -11,12 +11,11 @@ import (
 	// "encoding/json"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
 
 var (
 	addr = flag.String("addr", "localhost:50052", "the address to connect to")
-	data = map[string]interface{}{"name": ""}
+	req  = map[string]interface{}{"name": "Ivan"}
 )
 
 // func (c *testClient) Hello(ctx context.Context, in map[string]interface{}, opts ...grpc.CallOption) (interface{}, error) {
@@ -37,7 +36,10 @@ var (
 func main() {
 	flag.Parse()
 	// Set up a connection to the server.
-	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.Dial(*addr,
+		grpc.WithInsecure(),
+		grpc.WithBlock(),
+		grpc.WithDefaultCallOptions(grpc.CallContentSubtype("avro")))
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
@@ -48,7 +50,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	r, err := c.Hello(ctx)
+	r, err := c.Hello(ctx, req)
 	// r, err := c.Hello(ctx, *&data, grpc.CallContentSubtype("avro"))
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)

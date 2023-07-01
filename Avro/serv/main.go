@@ -14,14 +14,14 @@ const (
 	port = ":50052"
 )
 
-type server struct {
+type testServer struct {
 	av.UnimplementedTestServer
 }
 
-func (s *server) Hello(ctx context.Context, in map[string]interface{}) (interface{}, error) {
+func (s *testServer) Hello(ctx context.Context, in map[string]interface{}) (interface{}, error) {
 	name := in["name"]
 	if name == "" {
-		name = "world"
+		name = "World"
 	}
 	return fmt.Sprintf("Hello %s!", name), nil
 }
@@ -34,8 +34,10 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 	s := grpc.NewServer()
+	av.RegisterTestServer(s, &testServer{})
+	go s.Serve(lis)
+	// defer s.GracefulStop()
 
-	av.RegisterTestServer(s, &server{})
 	log.Printf("server listening at %v", lis.Addr())
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
