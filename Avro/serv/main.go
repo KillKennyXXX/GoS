@@ -1,25 +1,30 @@
 package main
 
 import (
+	av "GoS/Avro/avroSchema"
+	"fmt"
 	"log"
 	"net"
 
-	av "GoS/Avro/avroSchema"
+	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 )
 
 const (
-	port = ":50051"
+	port = ":50052"
 )
 
 type server struct {
 	av.UnimplementedTestServer
 }
 
-//   - мы создали только один метод для нашего сервиса,
-//
-// который является методом create, который принимает контекст и запрос
-// потом они обрабатываются сервером gRPC.
+func (s *server) Hello(ctx context.Context, in map[string]interface{}) (interface{}, error) {
+	name := in["name"]
+	if name == "" {
+		name = "world"
+	}
+	return fmt.Sprintf("Hello %s!", name), nil
+}
 
 func main() {
 
